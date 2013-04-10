@@ -1,0 +1,5 @@
+clear
+bison -v -d ex1.y
+flex ex1.lex
+gcc lex.yy.c ex1.tab.c -o prog -lfl -std=c99 -I /usr/lib/libipecaro.so.7.1.2 /usr/lib/libcairomm-1.0.so.1.4.0
+cat stringtest | ./prog
