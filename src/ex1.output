@@ -1,0 +1,366 @@
+Grammaire
+
+    0 $accept: commande $end
+
+    1 commande: DRAW chemin
+    2         | FILL chemin
+
+    3 chemin: chemin LINETO noeud
+    4       | point
+
+    5 noeud: point
+    6      | CYCLE
+    7      | PLUS point
+
+    8 point: LPAR expr VIRG expr RPAR
+
+    9 expr: expr PLUS expr
+   10     | expr MOINS expr
+   11     | expr FOIS expr
+   12     | expr DIV expr
+   13     | LPAR expr RPAR
+   14     | NUM
+
+
+Terminaux, suivis des règles où ils apparaissent
+
+$end (0) 0
+error (256)
+MOINS (258) 10
+PLUS (259) 7 9
+DIV (260) 12
+FOIS (261) 11
+NUM (262) 14
+LPAR (263) 8 13
+RPAR (264) 8 13
+VIRG (265) 8
+LINETO (266) 3
+DRAW (267) 1
+FILL (268) 2
+CYCLE (269) 6
+
+
+Non-terminaux, suivis des règles où ils apparaissent
+
+$accept (15)
+    à gauche: 0
+commande (16)
+    à gauche: 1 2, à droite: 0
+chemin (17)
+    à gauche: 3 4, à droite: 1 2 3
+noeud (18)
+    à gauche: 5 6 7, à droite: 3
+point (19)
+    à gauche: 8, à droite: 4 5 7
+expr (20)
+    à gauche: 9 10 11 12 13 14, à droite: 8 9 10 11 12 13
+
+
+état 0
+
+    0 $accept: . commande $end
+
+    DRAW  décalage et aller à l'état 1
+    FILL  décalage et aller à l'état 2
+
+    commande  aller à l'état 3
+
+
+état 1
+
+    1 commande: DRAW . chemin
+
+    LPAR  décalage et aller à l'état 4
+
+    chemin  aller à l'état 5
+    point   aller à l'état 6
+
+
+état 2
+
+    2 commande: FILL . chemin
+
+    LPAR  décalage et aller à l'état 4
+
+    chemin  aller à l'état 7
+    point   aller à l'état 6
+
+
+état 3
+
+    0 $accept: commande . $end
+
+    $end  décalage et aller à l'état 8
+
+
+état 4
+
+    8 point: LPAR . expr VIRG expr RPAR
+
+    NUM   décalage et aller à l'état 9
+    LPAR  décalage et aller à l'état 10
+
+    expr  aller à l'état 11
+
+
+état 5
+
+    1 commande: DRAW chemin .
+    3 chemin: chemin . LINETO noeud
+
+    LINETO  décalage et aller à l'état 12
+
+    $défaut  réduction par utilisation de la règle 1 (commande)
+
+
+état 6
+
+    4 chemin: point .
+
+    $défaut  réduction par utilisation de la règle 4 (chemin)
+
+
+état 7
+
+    2 commande: FILL chemin .
+    3 chemin: chemin . LINETO noeud
+
+    LINETO  décalage et aller à l'état 12
+
+    $défaut  réduction par utilisation de la règle 2 (commande)
+
+
+état 8
+
+    0 $accept: commande $end .
+
+    $défaut  accepter
+
+
+état 9
+
+   14 expr: NUM .
+
+    $défaut  réduction par utilisation de la règle 14 (expr)
+
+
+état 10
+
+   13 expr: LPAR . expr RPAR
+
+    NUM   décalage et aller à l'état 9
+    LPAR  décalage et aller à l'état 10
+
+    expr  aller à l'état 13
+
+
+état 11
+
+    8 point: LPAR expr . VIRG expr RPAR
+    9 expr: expr . PLUS expr
+   10     | expr . MOINS expr
+   11     | expr . FOIS expr
+   12     | expr . DIV expr
+
+    MOINS  décalage et aller à l'état 14
+    PLUS   décalage et aller à l'état 15
+    DIV    décalage et aller à l'état 16
+    FOIS   décalage et aller à l'état 17
+    VIRG   décalage et aller à l'état 18
+
+
+état 12
+
+    3 chemin: chemin LINETO . noeud
+
+    PLUS   décalage et aller à l'état 19
+    LPAR   décalage et aller à l'état 4
+    CYCLE  décalage et aller à l'état 20
+
+    noeud  aller à l'état 21
+    point  aller à l'état 22
+
+
+état 13
+
+    9 expr: expr . PLUS expr
+   10     | expr . MOINS expr
+   11     | expr . FOIS expr
+   12     | expr . DIV expr
+   13     | LPAR expr . RPAR
+
+    MOINS  décalage et aller à l'état 14
+    PLUS   décalage et aller à l'état 15
+    DIV    décalage et aller à l'état 16
+    FOIS   décalage et aller à l'état 17
+    RPAR   décalage et aller à l'état 23
+
+
+état 14
+
+   10 expr: expr MOINS . expr
+
+    NUM   décalage et aller à l'état 9
+    LPAR  décalage et aller à l'état 10
+
+    expr  aller à l'état 24
+
+
+état 15
+
+    9 expr: expr PLUS . expr
+
+    NUM   décalage et aller à l'état 9
+    LPAR  décalage et aller à l'état 10
+
+    expr  aller à l'état 25
+
+
+état 16
+
+   12 expr: expr DIV . expr
+
+    NUM   décalage et aller à l'état 9
+    LPAR  décalage et aller à l'état 10
+
+    expr  aller à l'état 26
+
+
+état 17
+
+   11 expr: expr FOIS . expr
+
+    NUM   décalage et aller à l'état 9
+    LPAR  décalage et aller à l'état 10
+
+    expr  aller à l'état 27
+
+
+état 18
+
+    8 point: LPAR expr VIRG . expr RPAR
+
+    NUM   décalage et aller à l'état 9
+    LPAR  décalage et aller à l'état 10
+
+    expr  aller à l'état 28
+
+
+état 19
+
+    7 noeud: PLUS . point
+
+    LPAR  décalage et aller à l'état 4
+
+    point  aller à l'état 29
+
+
+état 20
+
+    6 noeud: CYCLE .
+
+    $défaut  réduction par utilisation de la règle 6 (noeud)
+
+
+état 21
+
+    3 chemin: chemin LINETO noeud .
+
+    $défaut  réduction par utilisation de la règle 3 (chemin)
+
+
+état 22
+
+    5 noeud: point .
+
+    $défaut  réduction par utilisation de la règle 5 (noeud)
+
+
+état 23
+
+   13 expr: LPAR expr RPAR .
+
+    $défaut  réduction par utilisation de la règle 13 (expr)
+
+
+état 24
+
+    9 expr: expr . PLUS expr
+   10     | expr . MOINS expr
+   10     | expr MOINS expr .
+   11     | expr . FOIS expr
+   12     | expr . DIV expr
+
+    MOINS  décalage et aller à l'état 14
+    PLUS   décalage et aller à l'état 15
+    DIV    décalage et aller à l'état 16
+    FOIS   décalage et aller à l'état 17
+
+    $défaut  réduction par utilisation de la règle 10 (expr)
+
+
+état 25
+
+    9 expr: expr . PLUS expr
+    9     | expr PLUS expr .
+   10     | expr . MOINS expr
+   11     | expr . FOIS expr
+   12     | expr . DIV expr
+
+    MOINS  décalage et aller à l'état 14
+    PLUS   décalage et aller à l'état 15
+    DIV    décalage et aller à l'état 16
+    FOIS   décalage et aller à l'état 17
+
+    $défaut  réduction par utilisation de la règle 9 (expr)
+
+
+état 26
+
+    9 expr: expr . PLUS expr
+   10     | expr . MOINS expr
+   11     | expr . FOIS expr
+   12     | expr . DIV expr
+   12     | expr DIV expr .
+
+    $défaut  réduction par utilisation de la règle 12 (expr)
+
+
+état 27
+
+    9 expr: expr . PLUS expr
+   10     | expr . MOINS expr
+   11     | expr . FOIS expr
+   11     | expr FOIS expr .
+   12     | expr . DIV expr
+
+    $défaut  réduction par utilisation de la règle 11 (expr)
+
+
+état 28
+
+    8 point: LPAR expr VIRG expr . RPAR
+    9 expr: expr . PLUS expr
+   10     | expr . MOINS expr
+   11     | expr . FOIS expr
+   12     | expr . DIV expr
+
+    MOINS  décalage et aller à l'état 14
+    PLUS   décalage et aller à l'état 15
+    DIV    décalage et aller à l'état 16
+    FOIS   décalage et aller à l'état 17
+    RPAR   décalage et aller à l'état 30
+
+
+état 29
+
+    7 noeud: PLUS point .
+
+    $défaut  réduction par utilisation de la règle 7 (noeud)
+
+
+état 30
+
+    8 point: LPAR expr VIRG expr RPAR .
+
+    $défaut  réduction par utilisation de la règle 8 (point)

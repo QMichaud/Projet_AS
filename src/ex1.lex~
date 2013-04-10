@@ -1,19 +1,10 @@
 %{
 #include "ex1.tab.h"
-
-char *tab_var[];
 %}
 
 FLOAT ([0-9]+(\.[0-9]*)?|\.[0-9]+)
 
-%x VAR
- 
 %%
-
-[a-zA-Z0-9_]*\= {BEGIN VAR; }
-
-<VAR>.*\; {
-
 \+ return PLUS;
 \- return MOINS;
 \* return FOIS;
@@ -23,6 +14,7 @@ FLOAT ([0-9]+(\.[0-9]*)?|\.[0-9]+)
 \) return RPAR;
 \, return VIRG;
 
+[a-zA-Z0-9_]*\=.* {yylval.variables = atof(yytext);return VARIABLE;}
 draw return DRAW;
 fill return FILL;
 cycle return CYCLE;
@@ -31,9 +23,3 @@ cycle return CYCLE;
 {FLOAT} { yylval.scalaire = atof(yytext); return NUM; }
 
 
-
-
-a = 5
-a = 3
-
-(3,3)--(3,2)--cycle
