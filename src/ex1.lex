@@ -3,7 +3,7 @@
 %}
 
 FLOAT ([0-9]+(\.[0-9]*)?|\.[0-9]+)
-aaa
+bb
 %%
 \+ return PLUS;
 \- return MOINS;
