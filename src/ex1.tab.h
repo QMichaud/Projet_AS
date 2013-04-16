@@ -41,14 +41,32 @@
      PLUS = 259,
      DIV = 260,
      FOIS = 261,
-     NUM = 262,
-     LPAR = 263,
-     RPAR = 264,
-     VIRG = 265,
-     LINETO = 266,
-     DRAW = 267,
-     FILL = 268,
-     CYCLE = 269
+     LPAR = 262,
+     RPAR = 263,
+     LACC = 264,
+     RACC = 265,
+     INF = 266,
+     SUP = 267,
+     EQ = 268,
+     NOT = 269,
+     AND = 270,
+     OR = 271,
+     IF = 272,
+     ELSE = 273,
+     FOR = 274,
+     VIRG = 275,
+     POINTVIRG = 276,
+     DPTS = 277,
+     LINETO = 278,
+     VAR = 279,
+     IMG = 280,
+     DRAW = 281,
+     FILL = 282,
+     TRANS = 283,
+     ROT = 284,
+     CYCLE = 285,
+     ANGLE = 286,
+     NUM = 287
    };
 #endif
 
@@ -59,15 +77,15 @@ typedef union YYSTYPE
 {
 
 /* Line 2068 of yacc.c  */
-#line 19 "ex1.y"
+#line 12 "ex1.y"
 
     float scalaire;
-    struct coord * point;
+    struct coord *point;
 
 
 
 /* Line 2068 of yacc.c  */
-#line 71 "ex1.tab.h"
+#line 89 "ex1.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

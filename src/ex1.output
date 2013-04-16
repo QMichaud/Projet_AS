@@ -1,366 +1,1944 @@
+État 39 conflits: 8 réduction/réduction
+État 72 conflits: 1 décalage/réduction
+État 75 conflits: 1 décalage/réduction
+État 87 conflits: 2 décalage/réduction
+État 88 conflits: 2 décalage/réduction
+État 113 conflits: 2 décalage/réduction
+État 114 conflits: 2 décalage/réduction
+
+
 Grammaire
 
-    0 $accept: commande $end
+    0 $accept: liste_commandes $end
 
-    1 commande: DRAW chemin
-    2         | FILL chemin
+    1 liste_commandes: /* vide */
+    2                | commande liste_commandes
+    3                | declaration liste_commandes
+    4                | condition liste_commandes
+    5                | for liste_commandes
 
-    3 chemin: chemin LINETO noeud
-    4       | point
+    6 commande: DRAW chemin
+    7         | DRAW image
+    8         | DRAW rotation
+    9         | DRAW translation
+   10         | FILL chemin
 
-    5 noeud: point
-    6      | CYCLE
-    7      | PLUS point
+   11 condition: IF LPAR cond RPAR LACC liste_commandes RACC else
 
-    8 point: LPAR expr VIRG expr RPAR
+   12 else: /* vide */
+   13     | ELSE condition
+   14     | ELSE LACC liste_commandes RACC
 
-    9 expr: expr PLUS expr
-   10     | expr MOINS expr
-   11     | expr FOIS expr
-   12     | expr DIV expr
-   13     | LPAR expr RPAR
-   14     | NUM
+   15 cond: cond OR cond
+   16     | LPAR cond OR cond RPAR
+   17     | cond AND cond
+   18     | LPAR cond AND cond RPAR
+   19     | NOT LPAR cond RPAR
+   20     | expr NOT EQ expr
+   21     | expr EQ EQ expr
+   22     | expr INF expr
+   23     | expr INF EQ expr
+   24     | expr SUP expr
+   25     | expr SUP EQ expr
+
+   26 for: FOR LPAR param1 POINTVIRG param2 POINTVIRG param3 RPAR LACC liste_commandes RACC
+
+   27 param1: /* vide */
+   28       | declaration
+
+   29 param2: /* vide */
+   30       | cond
+
+   31 param3: /* vide */
+   32       | expr
+   33       | VAR EQ expr
+
+   34 chemin: chemin LINETO noeud
+   35       | point
+   36       | VAR
+
+   37 noeud: point
+   38      | CYCLE
+   39      | PLUS point
+   40      | VAR
+
+   41 point: LPAR expr VIRG expr RPAR
+   42      | LPAR expr DPTS expr RPAR
+
+   43 expr: expr PLUS expr
+   44     | expr MOINS expr
+   45     | expr FOIS expr
+   46     | expr DIV expr
+   47     | LPAR expr RPAR
+   48     | expr PLUS PLUS
+   49     | expr MOINS MOINS
+   50     | NUM
+   51     | VAR
+
+   52 declaration: VAR EQ chemin
+   53            | VAR EQ expr
+   54            | VAR EQ image
+   55            | VAR EQ translation
+   56            | VAR EQ rotation
+
+   57 rotation: ROT LPAR point VIRG point VIRG ANGLE RPAR
+   58         | ROT LPAR chemin VIRG point VIRG ANGLE RPAR
+   59         | ROT LPAR image VIRG point VIRG ANGLE RPAR
+
+   60 translation: TRANS LPAR point VIRG point RPAR
+   61            | TRANS LPAR chemin VIRG point RPAR
+   62            | TRANS LPAR image VIRG point RPAR
+
+   63 image: IMG LACC liste_commandes RACC
 
 
 Terminaux, suivis des règles où ils apparaissent
 
 $end (0) 0
 error (256)
-MOINS (258) 10
-PLUS (259) 7 9
-DIV (260) 12
-FOIS (261) 11
-NUM (262) 14
-LPAR (263) 8 13
-RPAR (264) 8 13
-VIRG (265) 8
-LINETO (266) 3
-DRAW (267) 1
-FILL (268) 2
-CYCLE (269) 6
+MOINS (258) 44 49
+PLUS (259) 39 43 48
+DIV (260) 46
+FOIS (261) 45
+LPAR (262) 11 16 18 19 26 41 42 47 57 58 59 60 61 62
+RPAR (263) 11 16 18 19 26 41 42 47 57 58 59 60 61 62
+LACC (264) 11 14 26 63
+RACC (265) 11 14 26 63
+INF (266) 22 23
+SUP (267) 24 25
+EQ (268) 20 21 23 25 33 52 53 54 55 56
+NOT (269) 19 20
+AND (270) 17 18
+OR (271) 15 16
+IF (272) 11
+ELSE (273) 13 14
+FOR (274) 26
+VIRG (275) 41 57 58 59 60 61 62
+POINTVIRG (276) 26
+DPTS (277) 42
+LINETO (278) 34
+VAR (279) 33 36 40 51 52 53 54 55 56
+IMG (280) 63
+DRAW (281) 6 7 8 9
+FILL (282) 10
+TRANS (283) 60 61 62
+ROT (284) 57 58 59
+CYCLE (285) 38
+ANGLE (286) 57 58 59
+NUM (287) 50
 
 
 Non-terminaux, suivis des règles où ils apparaissent
 
-$accept (15)
+$accept (33)
     à gauche: 0
-commande (16)
-    à gauche: 1 2, à droite: 0
-chemin (17)
-    à gauche: 3 4, à droite: 1 2 3
-noeud (18)
-    à gauche: 5 6 7, à droite: 3
-point (19)
-    à gauche: 8, à droite: 4 5 7
-expr (20)
-    à gauche: 9 10 11 12 13 14, à droite: 8 9 10 11 12 13
+liste_commandes (34)
+    à gauche: 1 2 3 4 5, à droite: 0 2 3 4 5 11 14 26 63
+commande (35)
+    à gauche: 6 7 8 9 10, à droite: 2
+condition (36)
+    à gauche: 11, à droite: 4 13
+else (37)
+    à gauche: 12 13 14, à droite: 11
+cond (38)
+    à gauche: 15 16 17 18 19 20 21 22 23 24 25, à droite: 11 15 16
+    17 18 19 30
+for (39)
+    à gauche: 26, à droite: 5
+param1 (40)
+    à gauche: 27 28, à droite: 26
+param2 (41)
+    à gauche: 29 30, à droite: 26
+param3 (42)
+    à gauche: 31 32 33, à droite: 26
+chemin (43)
+    à gauche: 34 35 36, à droite: 6 10 34 52 58 61
+noeud (44)
+    à gauche: 37 38 39 40, à droite: 34
+point (45)
+    à gauche: 41 42, à droite: 35 37 39 57 58 59 60 61 62
+expr (46)
+    à gauche: 43 44 45 46 47 48 49 50 51, à droite: 20 21 22 23 24
+    25 32 33 41 42 43 44 45 46 47 48 49 53
+declaration (47)
+    à gauche: 52 53 54 55 56, à droite: 3 28
+rotation (48)
+    à gauche: 57 58 59, à droite: 8 56
+translation (49)
+    à gauche: 60 61 62, à droite: 9 55
+image (50)
+    à gauche: 63, à droite: 7 54 59 62
 
 
 état 0
 
-    0 $accept: . commande $end
+    0 $accept: . liste_commandes $end
 
-    DRAW  décalage et aller à l'état 1
-    FILL  décalage et aller à l'état 2
+    IF    décalage et aller à l'état 1
+    FOR   décalage et aller à l'état 2
+    VAR   décalage et aller à l'état 3
+    DRAW  décalage et aller à l'état 4
+    FILL  décalage et aller à l'état 5
 
-    commande  aller à l'état 3
+    $défaut  réduction par utilisation de la règle 1 (liste_commandes)
+
+    liste_commandes  aller à l'état 6
+    commande         aller à l'état 7
+    condition        aller à l'état 8
+    for              aller à l'état 9
+    declaration      aller à l'état 10
 
 
 état 1
 
-    1 commande: DRAW . chemin
+   11 condition: IF . LPAR cond RPAR LACC liste_commandes RACC else
 
-    LPAR  décalage et aller à l'état 4
-
-    chemin  aller à l'état 5
-    point   aller à l'état 6
+    LPAR  décalage et aller à l'état 11
 
 
 état 2
 
-    2 commande: FILL . chemin
+   26 for: FOR . LPAR param1 POINTVIRG param2 POINTVIRG param3 RPAR LACC liste_commandes RACC
 
-    LPAR  décalage et aller à l'état 4
-
-    chemin  aller à l'état 7
-    point   aller à l'état 6
+    LPAR  décalage et aller à l'état 12
 
 
 état 3
 
-    0 $accept: commande . $end
+   52 declaration: VAR . EQ chemin
+   53            | VAR . EQ expr
+   54            | VAR . EQ image
+   55            | VAR . EQ translation
+   56            | VAR . EQ rotation
 
-    $end  décalage et aller à l'état 8
+    EQ  décalage et aller à l'état 13
 
 
 état 4
 
-    8 point: LPAR . expr VIRG expr RPAR
+    6 commande: DRAW . chemin
+    7         | DRAW . image
+    8         | DRAW . rotation
+    9         | DRAW . translation
 
-    NUM   décalage et aller à l'état 9
-    LPAR  décalage et aller à l'état 10
+    LPAR   décalage et aller à l'état 14
+    VAR    décalage et aller à l'état 15
+    IMG    décalage et aller à l'état 16
+    TRANS  décalage et aller à l'état 17
+    ROT    décalage et aller à l'état 18
 
-    expr  aller à l'état 11
+    chemin       aller à l'état 19
+    point        aller à l'état 20
+    rotation     aller à l'état 21
+    translation  aller à l'état 22
+    image        aller à l'état 23
 
 
 état 5
 
-    1 commande: DRAW chemin .
-    3 chemin: chemin . LINETO noeud
+   10 commande: FILL . chemin
 
-    LINETO  décalage et aller à l'état 12
+    LPAR  décalage et aller à l'état 14
+    VAR   décalage et aller à l'état 15
 
-    $défaut  réduction par utilisation de la règle 1 (commande)
+    chemin  aller à l'état 24
+    point   aller à l'état 20
 
 
 état 6
 
-    4 chemin: point .
+    0 $accept: liste_commandes . $end
 
-    $défaut  réduction par utilisation de la règle 4 (chemin)
+    $end  décalage et aller à l'état 25
 
 
 état 7
 
-    2 commande: FILL chemin .
-    3 chemin: chemin . LINETO noeud
+    2 liste_commandes: commande . liste_commandes
 
-    LINETO  décalage et aller à l'état 12
+    IF    décalage et aller à l'état 1
+    FOR   décalage et aller à l'état 2
+    VAR   décalage et aller à l'état 3
+    DRAW  décalage et aller à l'état 4
+    FILL  décalage et aller à l'état 5
 
-    $défaut  réduction par utilisation de la règle 2 (commande)
+    $défaut  réduction par utilisation de la règle 1 (liste_commandes)
+
+    liste_commandes  aller à l'état 26
+    commande         aller à l'état 7
+    condition        aller à l'état 8
+    for              aller à l'état 9
+    declaration      aller à l'état 10
 
 
 état 8
 
-    0 $accept: commande $end .
+    4 liste_commandes: condition . liste_commandes
 
-    $défaut  accepter
+    IF    décalage et aller à l'état 1
+    FOR   décalage et aller à l'état 2
+    VAR   décalage et aller à l'état 3
+    DRAW  décalage et aller à l'état 4
+    FILL  décalage et aller à l'état 5
+
+    $défaut  réduction par utilisation de la règle 1 (liste_commandes)
+
+    liste_commandes  aller à l'état 27
+    commande         aller à l'état 7
+    condition        aller à l'état 8
+    for              aller à l'état 9
+    declaration      aller à l'état 10
 
 
 état 9
 
-   14 expr: NUM .
+    5 liste_commandes: for . liste_commandes
 
-    $défaut  réduction par utilisation de la règle 14 (expr)
+    IF    décalage et aller à l'état 1
+    FOR   décalage et aller à l'état 2
+    VAR   décalage et aller à l'état 3
+    DRAW  décalage et aller à l'état 4
+    FILL  décalage et aller à l'état 5
+
+    $défaut  réduction par utilisation de la règle 1 (liste_commandes)
+
+    liste_commandes  aller à l'état 28
+    commande         aller à l'état 7
+    condition        aller à l'état 8
+    for              aller à l'état 9
+    declaration      aller à l'état 10
 
 
 état 10
 
-   13 expr: LPAR . expr RPAR
+    3 liste_commandes: declaration . liste_commandes
 
-    NUM   décalage et aller à l'état 9
-    LPAR  décalage et aller à l'état 10
+    IF    décalage et aller à l'état 1
+    FOR   décalage et aller à l'état 2
+    VAR   décalage et aller à l'état 3
+    DRAW  décalage et aller à l'état 4
+    FILL  décalage et aller à l'état 5
 
-    expr  aller à l'état 13
+    $défaut  réduction par utilisation de la règle 1 (liste_commandes)
+
+    liste_commandes  aller à l'état 29
+    commande         aller à l'état 7
+    condition        aller à l'état 8
+    for              aller à l'état 9
+    declaration      aller à l'état 10
 
 
 état 11
 
-    8 point: LPAR expr . VIRG expr RPAR
-    9 expr: expr . PLUS expr
-   10     | expr . MOINS expr
-   11     | expr . FOIS expr
-   12     | expr . DIV expr
+   11 condition: IF LPAR . cond RPAR LACC liste_commandes RACC else
 
-    MOINS  décalage et aller à l'état 14
-    PLUS   décalage et aller à l'état 15
-    DIV    décalage et aller à l'état 16
-    FOIS   décalage et aller à l'état 17
-    VIRG   décalage et aller à l'état 18
+    LPAR  décalage et aller à l'état 30
+    NOT   décalage et aller à l'état 31
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    cond  aller à l'état 34
+    expr  aller à l'état 35
 
 
 état 12
 
-    3 chemin: chemin LINETO . noeud
+   26 for: FOR LPAR . param1 POINTVIRG param2 POINTVIRG param3 RPAR LACC liste_commandes RACC
 
-    PLUS   décalage et aller à l'état 19
-    LPAR   décalage et aller à l'état 4
-    CYCLE  décalage et aller à l'état 20
+    VAR  décalage et aller à l'état 3
 
-    noeud  aller à l'état 21
-    point  aller à l'état 22
+    $défaut  réduction par utilisation de la règle 27 (param1)
+
+    param1       aller à l'état 36
+    declaration  aller à l'état 37
 
 
 état 13
 
-    9 expr: expr . PLUS expr
-   10     | expr . MOINS expr
-   11     | expr . FOIS expr
-   12     | expr . DIV expr
-   13     | LPAR expr . RPAR
+   52 declaration: VAR EQ . chemin
+   53            | VAR EQ . expr
+   54            | VAR EQ . image
+   55            | VAR EQ . translation
+   56            | VAR EQ . rotation
 
-    MOINS  décalage et aller à l'état 14
-    PLUS   décalage et aller à l'état 15
-    DIV    décalage et aller à l'état 16
-    FOIS   décalage et aller à l'état 17
-    RPAR   décalage et aller à l'état 23
+    LPAR   décalage et aller à l'état 38
+    VAR    décalage et aller à l'état 39
+    IMG    décalage et aller à l'état 16
+    TRANS  décalage et aller à l'état 17
+    ROT    décalage et aller à l'état 18
+    NUM    décalage et aller à l'état 33
+
+    chemin       aller à l'état 40
+    point        aller à l'état 20
+    expr         aller à l'état 41
+    rotation     aller à l'état 42
+    translation  aller à l'état 43
+    image        aller à l'état 44
 
 
 état 14
 
-   10 expr: expr MOINS . expr
+   41 point: LPAR . expr VIRG expr RPAR
+   42      | LPAR . expr DPTS expr RPAR
 
-    NUM   décalage et aller à l'état 9
-    LPAR  décalage et aller à l'état 10
+    LPAR  décalage et aller à l'état 45
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
 
-    expr  aller à l'état 24
+    expr  aller à l'état 46
 
 
 état 15
 
-    9 expr: expr PLUS . expr
+   36 chemin: VAR .
 
-    NUM   décalage et aller à l'état 9
-    LPAR  décalage et aller à l'état 10
-
-    expr  aller à l'état 25
+    $défaut  réduction par utilisation de la règle 36 (chemin)
 
 
 état 16
 
-   12 expr: expr DIV . expr
+   63 image: IMG . LACC liste_commandes RACC
 
-    NUM   décalage et aller à l'état 9
-    LPAR  décalage et aller à l'état 10
-
-    expr  aller à l'état 26
+    LACC  décalage et aller à l'état 47
 
 
 état 17
 
-   11 expr: expr FOIS . expr
+   60 translation: TRANS . LPAR point VIRG point RPAR
+   61            | TRANS . LPAR chemin VIRG point RPAR
+   62            | TRANS . LPAR image VIRG point RPAR
 
-    NUM   décalage et aller à l'état 9
-    LPAR  décalage et aller à l'état 10
-
-    expr  aller à l'état 27
+    LPAR  décalage et aller à l'état 48
 
 
 état 18
 
-    8 point: LPAR expr VIRG . expr RPAR
+   57 rotation: ROT . LPAR point VIRG point VIRG ANGLE RPAR
+   58         | ROT . LPAR chemin VIRG point VIRG ANGLE RPAR
+   59         | ROT . LPAR image VIRG point VIRG ANGLE RPAR
 
-    NUM   décalage et aller à l'état 9
-    LPAR  décalage et aller à l'état 10
-
-    expr  aller à l'état 28
+    LPAR  décalage et aller à l'état 49
 
 
 état 19
 
-    7 noeud: PLUS . point
+    6 commande: DRAW chemin .
+   34 chemin: chemin . LINETO noeud
 
-    LPAR  décalage et aller à l'état 4
+    LINETO  décalage et aller à l'état 50
 
-    point  aller à l'état 29
+    $défaut  réduction par utilisation de la règle 6 (commande)
 
 
 état 20
 
-    6 noeud: CYCLE .
+   35 chemin: point .
 
-    $défaut  réduction par utilisation de la règle 6 (noeud)
+    $défaut  réduction par utilisation de la règle 35 (chemin)
 
 
 état 21
 
-    3 chemin: chemin LINETO noeud .
+    8 commande: DRAW rotation .
 
-    $défaut  réduction par utilisation de la règle 3 (chemin)
+    $défaut  réduction par utilisation de la règle 8 (commande)
 
 
 état 22
 
-    5 noeud: point .
+    9 commande: DRAW translation .
 
-    $défaut  réduction par utilisation de la règle 5 (noeud)
+    $défaut  réduction par utilisation de la règle 9 (commande)
 
 
 état 23
 
-   13 expr: LPAR expr RPAR .
+    7 commande: DRAW image .
 
-    $défaut  réduction par utilisation de la règle 13 (expr)
+    $défaut  réduction par utilisation de la règle 7 (commande)
 
 
 état 24
 
-    9 expr: expr . PLUS expr
-   10     | expr . MOINS expr
-   10     | expr MOINS expr .
-   11     | expr . FOIS expr
-   12     | expr . DIV expr
+   10 commande: FILL chemin .
+   34 chemin: chemin . LINETO noeud
 
-    MOINS  décalage et aller à l'état 14
-    PLUS   décalage et aller à l'état 15
-    DIV    décalage et aller à l'état 16
-    FOIS   décalage et aller à l'état 17
+    LINETO  décalage et aller à l'état 50
 
-    $défaut  réduction par utilisation de la règle 10 (expr)
+    $défaut  réduction par utilisation de la règle 10 (commande)
 
 
 état 25
 
-    9 expr: expr . PLUS expr
-    9     | expr PLUS expr .
-   10     | expr . MOINS expr
-   11     | expr . FOIS expr
-   12     | expr . DIV expr
+    0 $accept: liste_commandes $end .
 
-    MOINS  décalage et aller à l'état 14
-    PLUS   décalage et aller à l'état 15
-    DIV    décalage et aller à l'état 16
-    FOIS   décalage et aller à l'état 17
-
-    $défaut  réduction par utilisation de la règle 9 (expr)
+    $défaut  accepter
 
 
 état 26
 
-    9 expr: expr . PLUS expr
-   10     | expr . MOINS expr
-   11     | expr . FOIS expr
-   12     | expr . DIV expr
-   12     | expr DIV expr .
+    2 liste_commandes: commande liste_commandes .
 
-    $défaut  réduction par utilisation de la règle 12 (expr)
+    $défaut  réduction par utilisation de la règle 2 (liste_commandes)
 
 
 état 27
 
-    9 expr: expr . PLUS expr
-   10     | expr . MOINS expr
-   11     | expr . FOIS expr
-   11     | expr FOIS expr .
-   12     | expr . DIV expr
+    4 liste_commandes: condition liste_commandes .
 
-    $défaut  réduction par utilisation de la règle 11 (expr)
+    $défaut  réduction par utilisation de la règle 4 (liste_commandes)
 
 
 état 28
 
-    8 point: LPAR expr VIRG expr . RPAR
-    9 expr: expr . PLUS expr
-   10     | expr . MOINS expr
-   11     | expr . FOIS expr
-   12     | expr . DIV expr
+    5 liste_commandes: for liste_commandes .
 
-    MOINS  décalage et aller à l'état 14
-    PLUS   décalage et aller à l'état 15
-    DIV    décalage et aller à l'état 16
-    FOIS   décalage et aller à l'état 17
-    RPAR   décalage et aller à l'état 30
+    $défaut  réduction par utilisation de la règle 5 (liste_commandes)
 
 
 état 29
 
-    7 noeud: PLUS point .
+    3 liste_commandes: declaration liste_commandes .
 
-    $défaut  réduction par utilisation de la règle 7 (noeud)
+    $défaut  réduction par utilisation de la règle 3 (liste_commandes)
 
 
 état 30
 
-    8 point: LPAR expr VIRG expr RPAR .
+   16 cond: LPAR . cond OR cond RPAR
+   18     | LPAR . cond AND cond RPAR
+   47 expr: LPAR . expr RPAR
 
-    $défaut  réduction par utilisation de la règle 8 (point)
+    LPAR  décalage et aller à l'état 30
+    NOT   décalage et aller à l'état 31
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    cond  aller à l'état 51
+    expr  aller à l'état 52
+
+
+état 31
+
+   19 cond: NOT . LPAR cond RPAR
+
+    LPAR  décalage et aller à l'état 53
+
+
+état 32
+
+   51 expr: VAR .
+
+    $défaut  réduction par utilisation de la règle 51 (expr)
+
+
+état 33
+
+   50 expr: NUM .
+
+    $défaut  réduction par utilisation de la règle 50 (expr)
+
+
+état 34
+
+   11 condition: IF LPAR cond . RPAR LACC liste_commandes RACC else
+   15 cond: cond . OR cond
+   17     | cond . AND cond
+
+    RPAR  décalage et aller à l'état 54
+    AND   décalage et aller à l'état 55
+    OR    décalage et aller à l'état 56
+
+
+état 35
+
+   20 cond: expr . NOT EQ expr
+   21     | expr . EQ EQ expr
+   22     | expr . INF expr
+   23     | expr . INF EQ expr
+   24     | expr . SUP expr
+   25     | expr . SUP EQ expr
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+    INF    décalage et aller à l'état 61
+    SUP    décalage et aller à l'état 62
+    EQ     décalage et aller à l'état 63
+    NOT    décalage et aller à l'état 64
+
+
+état 36
+
+   26 for: FOR LPAR param1 . POINTVIRG param2 POINTVIRG param3 RPAR LACC liste_commandes RACC
+
+    POINTVIRG  décalage et aller à l'état 65
+
+
+état 37
+
+   28 param1: declaration .
+
+    $défaut  réduction par utilisation de la règle 28 (param1)
+
+
+état 38
+
+   41 point: LPAR . expr VIRG expr RPAR
+   42      | LPAR . expr DPTS expr RPAR
+   47 expr: LPAR . expr RPAR
+
+    LPAR  décalage et aller à l'état 45
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    expr  aller à l'état 66
+
+
+état 39
+
+   36 chemin: VAR .
+   51 expr: VAR .
+
+    $end       réduction par utilisation de la règle 36 (chemin)
+    $end       [réduction par utilisation de la règle 51 (expr)]
+    MOINS      réduction par utilisation de la règle 51 (expr)
+    PLUS       réduction par utilisation de la règle 51 (expr)
+    DIV        réduction par utilisation de la règle 51 (expr)
+    FOIS       réduction par utilisation de la règle 51 (expr)
+    RACC       réduction par utilisation de la règle 36 (chemin)
+    RACC       [réduction par utilisation de la règle 51 (expr)]
+    IF         réduction par utilisation de la règle 36 (chemin)
+    IF         [réduction par utilisation de la règle 51 (expr)]
+    FOR        réduction par utilisation de la règle 36 (chemin)
+    FOR        [réduction par utilisation de la règle 51 (expr)]
+    POINTVIRG  réduction par utilisation de la règle 36 (chemin)
+    POINTVIRG  [réduction par utilisation de la règle 51 (expr)]
+    VAR        réduction par utilisation de la règle 36 (chemin)
+    VAR        [réduction par utilisation de la règle 51 (expr)]
+    DRAW       réduction par utilisation de la règle 36 (chemin)
+    DRAW       [réduction par utilisation de la règle 51 (expr)]
+    FILL       réduction par utilisation de la règle 36 (chemin)
+    FILL       [réduction par utilisation de la règle 51 (expr)]
+    $défaut   réduction par utilisation de la règle 36 (chemin)
+
+
+état 40
+
+   34 chemin: chemin . LINETO noeud
+   52 declaration: VAR EQ chemin .
+
+    LINETO  décalage et aller à l'état 50
+
+    $défaut  réduction par utilisation de la règle 52 (declaration)
+
+
+état 41
+
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+   53 declaration: VAR EQ expr .
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+
+    $défaut  réduction par utilisation de la règle 53 (declaration)
+
+
+état 42
+
+   56 declaration: VAR EQ rotation .
+
+    $défaut  réduction par utilisation de la règle 56 (declaration)
+
+
+état 43
+
+   55 declaration: VAR EQ translation .
+
+    $défaut  réduction par utilisation de la règle 55 (declaration)
+
+
+état 44
+
+   54 declaration: VAR EQ image .
+
+    $défaut  réduction par utilisation de la règle 54 (declaration)
+
+
+état 45
+
+   47 expr: LPAR . expr RPAR
+
+    LPAR  décalage et aller à l'état 45
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    expr  aller à l'état 67
+
+
+état 46
+
+   41 point: LPAR expr . VIRG expr RPAR
+   42      | LPAR expr . DPTS expr RPAR
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+    VIRG   décalage et aller à l'état 68
+    DPTS   décalage et aller à l'état 69
+
+
+état 47
+
+   63 image: IMG LACC . liste_commandes RACC
+
+    IF    décalage et aller à l'état 1
+    FOR   décalage et aller à l'état 2
+    VAR   décalage et aller à l'état 3
+    DRAW  décalage et aller à l'état 4
+    FILL  décalage et aller à l'état 5
+
+    $défaut  réduction par utilisation de la règle 1 (liste_commandes)
+
+    liste_commandes  aller à l'état 70
+    commande         aller à l'état 7
+    condition        aller à l'état 8
+    for              aller à l'état 9
+    declaration      aller à l'état 10
+
+
+état 48
+
+   60 translation: TRANS LPAR . point VIRG point RPAR
+   61            | TRANS LPAR . chemin VIRG point RPAR
+   62            | TRANS LPAR . image VIRG point RPAR
+
+    LPAR  décalage et aller à l'état 14
+    VAR   décalage et aller à l'état 15
+    IMG   décalage et aller à l'état 16
+
+    chemin  aller à l'état 71
+    point   aller à l'état 72
+    image   aller à l'état 73
+
+
+état 49
+
+   57 rotation: ROT LPAR . point VIRG point VIRG ANGLE RPAR
+   58         | ROT LPAR . chemin VIRG point VIRG ANGLE RPAR
+   59         | ROT LPAR . image VIRG point VIRG ANGLE RPAR
+
+    LPAR  décalage et aller à l'état 14
+    VAR   décalage et aller à l'état 15
+    IMG   décalage et aller à l'état 16
+
+    chemin  aller à l'état 74
+    point   aller à l'état 75
+    image   aller à l'état 76
+
+
+état 50
+
+   34 chemin: chemin LINETO . noeud
+
+    PLUS   décalage et aller à l'état 77
+    LPAR   décalage et aller à l'état 14
+    VAR    décalage et aller à l'état 78
+    CYCLE  décalage et aller à l'état 79
+
+    noeud  aller à l'état 80
+    point  aller à l'état 81
+
+
+état 51
+
+   15 cond: cond . OR cond
+   16     | LPAR cond . OR cond RPAR
+   17     | cond . AND cond
+   18     | LPAR cond . AND cond RPAR
+
+    AND  décalage et aller à l'état 82
+    OR   décalage et aller à l'état 83
+
+
+état 52
+
+   20 cond: expr . NOT EQ expr
+   21     | expr . EQ EQ expr
+   22     | expr . INF expr
+   23     | expr . INF EQ expr
+   24     | expr . SUP expr
+   25     | expr . SUP EQ expr
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   47     | LPAR expr . RPAR
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+    RPAR   décalage et aller à l'état 84
+    INF    décalage et aller à l'état 61
+    SUP    décalage et aller à l'état 62
+    EQ     décalage et aller à l'état 63
+    NOT    décalage et aller à l'état 64
+
+
+état 53
+
+   19 cond: NOT LPAR . cond RPAR
+
+    LPAR  décalage et aller à l'état 30
+    NOT   décalage et aller à l'état 31
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    cond  aller à l'état 85
+    expr  aller à l'état 35
+
+
+état 54
+
+   11 condition: IF LPAR cond RPAR . LACC liste_commandes RACC else
+
+    LACC  décalage et aller à l'état 86
+
+
+état 55
+
+   17 cond: cond AND . cond
+
+    LPAR  décalage et aller à l'état 30
+    NOT   décalage et aller à l'état 31
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    cond  aller à l'état 87
+    expr  aller à l'état 35
+
+
+état 56
+
+   15 cond: cond OR . cond
+
+    LPAR  décalage et aller à l'état 30
+    NOT   décalage et aller à l'état 31
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    cond  aller à l'état 88
+    expr  aller à l'état 35
+
+
+état 57
+
+   44 expr: expr MOINS . expr
+   49     | expr MOINS . MOINS
+
+    MOINS  décalage et aller à l'état 89
+    LPAR   décalage et aller à l'état 45
+    VAR    décalage et aller à l'état 32
+    NUM    décalage et aller à l'état 33
+
+    expr  aller à l'état 90
+
+
+état 58
+
+   43 expr: expr PLUS . expr
+   48     | expr PLUS . PLUS
+
+    PLUS  décalage et aller à l'état 91
+    LPAR  décalage et aller à l'état 45
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    expr  aller à l'état 92
+
+
+état 59
+
+   46 expr: expr DIV . expr
+
+    LPAR  décalage et aller à l'état 45
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    expr  aller à l'état 93
+
+
+état 60
+
+   45 expr: expr FOIS . expr
+
+    LPAR  décalage et aller à l'état 45
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    expr  aller à l'état 94
+
+
+état 61
+
+   22 cond: expr INF . expr
+   23     | expr INF . EQ expr
+
+    LPAR  décalage et aller à l'état 45
+    EQ    décalage et aller à l'état 95
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    expr  aller à l'état 96
+
+
+état 62
+
+   24 cond: expr SUP . expr
+   25     | expr SUP . EQ expr
+
+    LPAR  décalage et aller à l'état 45
+    EQ    décalage et aller à l'état 97
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    expr  aller à l'état 98
+
+
+état 63
+
+   21 cond: expr EQ . EQ expr
+
+    EQ  décalage et aller à l'état 99
+
+
+état 64
+
+   20 cond: expr NOT . EQ expr
+
+    EQ  décalage et aller à l'état 100
+
+
+état 65
+
+   26 for: FOR LPAR param1 POINTVIRG . param2 POINTVIRG param3 RPAR LACC liste_commandes RACC
+
+    LPAR  décalage et aller à l'état 30
+    NOT   décalage et aller à l'état 31
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    $défaut  réduction par utilisation de la règle 29 (param2)
+
+    cond    aller à l'état 101
+    param2  aller à l'état 102
+    expr    aller à l'état 35
+
+
+état 66
+
+   41 point: LPAR expr . VIRG expr RPAR
+   42      | LPAR expr . DPTS expr RPAR
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   47     | LPAR expr . RPAR
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+    RPAR   décalage et aller à l'état 84
+    VIRG   décalage et aller à l'état 68
+    DPTS   décalage et aller à l'état 69
+
+
+état 67
+
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   47     | LPAR expr . RPAR
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+    RPAR   décalage et aller à l'état 84
+
+
+état 68
+
+   41 point: LPAR expr VIRG . expr RPAR
+
+    LPAR  décalage et aller à l'état 45
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    expr  aller à l'état 103
+
+
+état 69
+
+   42 point: LPAR expr DPTS . expr RPAR
+
+    LPAR  décalage et aller à l'état 45
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    expr  aller à l'état 104
+
+
+état 70
+
+   63 image: IMG LACC liste_commandes . RACC
+
+    RACC  décalage et aller à l'état 105
+
+
+état 71
+
+   34 chemin: chemin . LINETO noeud
+   61 translation: TRANS LPAR chemin . VIRG point RPAR
+
+    VIRG    décalage et aller à l'état 106
+    LINETO  décalage et aller à l'état 50
+
+
+état 72
+
+   35 chemin: point .
+   60 translation: TRANS LPAR point . VIRG point RPAR
+
+    VIRG  décalage et aller à l'état 107
+
+    VIRG      [réduction par utilisation de la règle 35 (chemin)]
+    $défaut  réduction par utilisation de la règle 35 (chemin)
+
+
+état 73
+
+   62 translation: TRANS LPAR image . VIRG point RPAR
+
+    VIRG  décalage et aller à l'état 108
+
+
+état 74
+
+   34 chemin: chemin . LINETO noeud
+   58 rotation: ROT LPAR chemin . VIRG point VIRG ANGLE RPAR
+
+    VIRG    décalage et aller à l'état 109
+    LINETO  décalage et aller à l'état 50
+
+
+état 75
+
+   35 chemin: point .
+   57 rotation: ROT LPAR point . VIRG point VIRG ANGLE RPAR
+
+    VIRG  décalage et aller à l'état 110
+
+    VIRG      [réduction par utilisation de la règle 35 (chemin)]
+    $défaut  réduction par utilisation de la règle 35 (chemin)
+
+
+état 76
+
+   59 rotation: ROT LPAR image . VIRG point VIRG ANGLE RPAR
+
+    VIRG  décalage et aller à l'état 111
+
+
+état 77
+
+   39 noeud: PLUS . point
+
+    LPAR  décalage et aller à l'état 14
+
+    point  aller à l'état 112
+
+
+état 78
+
+   40 noeud: VAR .
+
+    $défaut  réduction par utilisation de la règle 40 (noeud)
+
+
+état 79
+
+   38 noeud: CYCLE .
+
+    $défaut  réduction par utilisation de la règle 38 (noeud)
+
+
+état 80
+
+   34 chemin: chemin LINETO noeud .
+
+    $défaut  réduction par utilisation de la règle 34 (chemin)
+
+
+état 81
+
+   37 noeud: point .
+
+    $défaut  réduction par utilisation de la règle 37 (noeud)
+
+
+état 82
+
+   17 cond: cond AND . cond
+   18     | LPAR cond AND . cond RPAR
+
+    LPAR  décalage et aller à l'état 30
+    NOT   décalage et aller à l'état 31
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    cond  aller à l'état 113
+    expr  aller à l'état 35
+
+
+état 83
+
+   15 cond: cond OR . cond
+   16     | LPAR cond OR . cond RPAR
+
+    LPAR  décalage et aller à l'état 30
+    NOT   décalage et aller à l'état 31
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    cond  aller à l'état 114
+    expr  aller à l'état 35
+
+
+état 84
+
+   47 expr: LPAR expr RPAR .
+
+    $défaut  réduction par utilisation de la règle 47 (expr)
+
+
+état 85
+
+   15 cond: cond . OR cond
+   17     | cond . AND cond
+   19     | NOT LPAR cond . RPAR
+
+    RPAR  décalage et aller à l'état 115
+    AND   décalage et aller à l'état 55
+    OR    décalage et aller à l'état 56
+
+
+état 86
+
+   11 condition: IF LPAR cond RPAR LACC . liste_commandes RACC else
+
+    IF    décalage et aller à l'état 1
+    FOR   décalage et aller à l'état 2
+    VAR   décalage et aller à l'état 3
+    DRAW  décalage et aller à l'état 4
+    FILL  décalage et aller à l'état 5
+
+    $défaut  réduction par utilisation de la règle 1 (liste_commandes)
+
+    liste_commandes  aller à l'état 116
+    commande         aller à l'état 7
+    condition        aller à l'état 8
+    for              aller à l'état 9
+    declaration      aller à l'état 10
+
+
+état 87
+
+   15 cond: cond . OR cond
+   17     | cond . AND cond
+   17     | cond AND cond .
+
+    AND  décalage et aller à l'état 55
+    OR   décalage et aller à l'état 56
+
+    AND       [réduction par utilisation de la règle 17 (cond)]
+    OR        [réduction par utilisation de la règle 17 (cond)]
+    $défaut  réduction par utilisation de la règle 17 (cond)
+
+
+état 88
+
+   15 cond: cond . OR cond
+   15     | cond OR cond .
+   17     | cond . AND cond
+
+    AND  décalage et aller à l'état 55
+    OR   décalage et aller à l'état 56
+
+    AND       [réduction par utilisation de la règle 15 (cond)]
+    OR        [réduction par utilisation de la règle 15 (cond)]
+    $défaut  réduction par utilisation de la règle 15 (cond)
+
+
+état 89
+
+   49 expr: expr MOINS MOINS .
+
+    $défaut  réduction par utilisation de la règle 49 (expr)
+
+
+état 90
+
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   44     | expr MOINS expr .
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+
+    $défaut  réduction par utilisation de la règle 44 (expr)
+
+
+état 91
+
+   48 expr: expr PLUS PLUS .
+
+    $défaut  réduction par utilisation de la règle 48 (expr)
+
+
+état 92
+
+   43 expr: expr . PLUS expr
+   43     | expr PLUS expr .
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+
+    $défaut  réduction par utilisation de la règle 43 (expr)
+
+
+état 93
+
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   46     | expr DIV expr .
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    $défaut  réduction par utilisation de la règle 46 (expr)
+
+
+état 94
+
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   45     | expr FOIS expr .
+   46     | expr . DIV expr
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    $défaut  réduction par utilisation de la règle 45 (expr)
+
+
+état 95
+
+   23 cond: expr INF EQ . expr
+
+    LPAR  décalage et aller à l'état 45
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    expr  aller à l'état 117
+
+
+état 96
+
+   22 cond: expr INF expr .
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+
+    $défaut  réduction par utilisation de la règle 22 (cond)
+
+
+état 97
+
+   25 cond: expr SUP EQ . expr
+
+    LPAR  décalage et aller à l'état 45
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    expr  aller à l'état 118
+
+
+état 98
+
+   24 cond: expr SUP expr .
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+
+    $défaut  réduction par utilisation de la règle 24 (cond)
+
+
+état 99
+
+   21 cond: expr EQ EQ . expr
+
+    LPAR  décalage et aller à l'état 45
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    expr  aller à l'état 119
+
+
+état 100
+
+   20 cond: expr NOT EQ . expr
+
+    LPAR  décalage et aller à l'état 45
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    expr  aller à l'état 120
+
+
+état 101
+
+   15 cond: cond . OR cond
+   17     | cond . AND cond
+   30 param2: cond .
+
+    AND  décalage et aller à l'état 55
+    OR   décalage et aller à l'état 56
+
+    $défaut  réduction par utilisation de la règle 30 (param2)
+
+
+état 102
+
+   26 for: FOR LPAR param1 POINTVIRG param2 . POINTVIRG param3 RPAR LACC liste_commandes RACC
+
+    POINTVIRG  décalage et aller à l'état 121
+
+
+état 103
+
+   41 point: LPAR expr VIRG expr . RPAR
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+    RPAR   décalage et aller à l'état 122
+
+
+état 104
+
+   42 point: LPAR expr DPTS expr . RPAR
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+    RPAR   décalage et aller à l'état 123
+
+
+état 105
+
+   63 image: IMG LACC liste_commandes RACC .
+
+    $défaut  réduction par utilisation de la règle 63 (image)
+
+
+état 106
+
+   61 translation: TRANS LPAR chemin VIRG . point RPAR
+
+    LPAR  décalage et aller à l'état 14
+
+    point  aller à l'état 124
+
+
+état 107
+
+   60 translation: TRANS LPAR point VIRG . point RPAR
+
+    LPAR  décalage et aller à l'état 14
+
+    point  aller à l'état 125
+
+
+état 108
+
+   62 translation: TRANS LPAR image VIRG . point RPAR
+
+    LPAR  décalage et aller à l'état 14
+
+    point  aller à l'état 126
+
+
+état 109
+
+   58 rotation: ROT LPAR chemin VIRG . point VIRG ANGLE RPAR
+
+    LPAR  décalage et aller à l'état 14
+
+    point  aller à l'état 127
+
+
+état 110
+
+   57 rotation: ROT LPAR point VIRG . point VIRG ANGLE RPAR
+
+    LPAR  décalage et aller à l'état 14
+
+    point  aller à l'état 128
+
+
+état 111
+
+   59 rotation: ROT LPAR image VIRG . point VIRG ANGLE RPAR
+
+    LPAR  décalage et aller à l'état 14
+
+    point  aller à l'état 129
+
+
+état 112
+
+   39 noeud: PLUS point .
+
+    $défaut  réduction par utilisation de la règle 39 (noeud)
+
+
+état 113
+
+   15 cond: cond . OR cond
+   17     | cond . AND cond
+   17     | cond AND cond .
+   18     | LPAR cond AND cond . RPAR
+
+    RPAR  décalage et aller à l'état 130
+    AND   décalage et aller à l'état 55
+    OR    décalage et aller à l'état 56
+
+    AND  [réduction par utilisation de la règle 17 (cond)]
+    OR   [réduction par utilisation de la règle 17 (cond)]
+
+
+état 114
+
+   15 cond: cond . OR cond
+   15     | cond OR cond .
+   16     | LPAR cond OR cond . RPAR
+   17     | cond . AND cond
+
+    RPAR  décalage et aller à l'état 131
+    AND   décalage et aller à l'état 55
+    OR    décalage et aller à l'état 56
+
+    AND  [réduction par utilisation de la règle 15 (cond)]
+    OR   [réduction par utilisation de la règle 15 (cond)]
+
+
+état 115
+
+   19 cond: NOT LPAR cond RPAR .
+
+    $défaut  réduction par utilisation de la règle 19 (cond)
+
+
+état 116
+
+   11 condition: IF LPAR cond RPAR LACC liste_commandes . RACC else
+
+    RACC  décalage et aller à l'état 132
+
+
+état 117
+
+   23 cond: expr INF EQ expr .
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+
+    $défaut  réduction par utilisation de la règle 23 (cond)
+
+
+état 118
+
+   25 cond: expr SUP EQ expr .
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+
+    $défaut  réduction par utilisation de la règle 25 (cond)
+
+
+état 119
+
+   21 cond: expr EQ EQ expr .
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+
+    $défaut  réduction par utilisation de la règle 21 (cond)
+
+
+état 120
+
+   20 cond: expr NOT EQ expr .
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+
+    $défaut  réduction par utilisation de la règle 20 (cond)
+
+
+état 121
+
+   26 for: FOR LPAR param1 POINTVIRG param2 POINTVIRG . param3 RPAR LACC liste_commandes RACC
+
+    LPAR  décalage et aller à l'état 45
+    VAR   décalage et aller à l'état 133
+    NUM   décalage et aller à l'état 33
+
+    $défaut  réduction par utilisation de la règle 31 (param3)
+
+    param3  aller à l'état 134
+    expr    aller à l'état 135
+
+
+état 122
+
+   41 point: LPAR expr VIRG expr RPAR .
+
+    $défaut  réduction par utilisation de la règle 41 (point)
+
+
+état 123
+
+   42 point: LPAR expr DPTS expr RPAR .
+
+    $défaut  réduction par utilisation de la règle 42 (point)
+
+
+état 124
+
+   61 translation: TRANS LPAR chemin VIRG point . RPAR
+
+    RPAR  décalage et aller à l'état 136
+
+
+état 125
+
+   60 translation: TRANS LPAR point VIRG point . RPAR
+
+    RPAR  décalage et aller à l'état 137
+
+
+état 126
+
+   62 translation: TRANS LPAR image VIRG point . RPAR
+
+    RPAR  décalage et aller à l'état 138
+
+
+état 127
+
+   58 rotation: ROT LPAR chemin VIRG point . VIRG ANGLE RPAR
+
+    VIRG  décalage et aller à l'état 139
+
+
+état 128
+
+   57 rotation: ROT LPAR point VIRG point . VIRG ANGLE RPAR
+
+    VIRG  décalage et aller à l'état 140
+
+
+état 129
+
+   59 rotation: ROT LPAR image VIRG point . VIRG ANGLE RPAR
+
+    VIRG  décalage et aller à l'état 141
+
+
+état 130
+
+   18 cond: LPAR cond AND cond RPAR .
+
+    $défaut  réduction par utilisation de la règle 18 (cond)
+
+
+état 131
+
+   16 cond: LPAR cond OR cond RPAR .
+
+    $défaut  réduction par utilisation de la règle 16 (cond)
+
+
+état 132
+
+   11 condition: IF LPAR cond RPAR LACC liste_commandes RACC . else
+
+    ELSE  décalage et aller à l'état 142
+
+    $défaut  réduction par utilisation de la règle 12 (else)
+
+    else  aller à l'état 143
+
+
+état 133
+
+   33 param3: VAR . EQ expr
+   51 expr: VAR .
+
+    EQ  décalage et aller à l'état 144
+
+    $défaut  réduction par utilisation de la règle 51 (expr)
+
+
+état 134
+
+   26 for: FOR LPAR param1 POINTVIRG param2 POINTVIRG param3 . RPAR LACC liste_commandes RACC
+
+    RPAR  décalage et aller à l'état 145
+
+
+état 135
+
+   32 param3: expr .
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+
+    $défaut  réduction par utilisation de la règle 32 (param3)
+
+
+état 136
+
+   61 translation: TRANS LPAR chemin VIRG point RPAR .
+
+    $défaut  réduction par utilisation de la règle 61 (translation)
+
+
+état 137
+
+   60 translation: TRANS LPAR point VIRG point RPAR .
+
+    $défaut  réduction par utilisation de la règle 60 (translation)
+
+
+état 138
+
+   62 translation: TRANS LPAR image VIRG point RPAR .
+
+    $défaut  réduction par utilisation de la règle 62 (translation)
+
+
+état 139
+
+   58 rotation: ROT LPAR chemin VIRG point VIRG . ANGLE RPAR
+
+    ANGLE  décalage et aller à l'état 146
+
+
+état 140
+
+   57 rotation: ROT LPAR point VIRG point VIRG . ANGLE RPAR
+
+    ANGLE  décalage et aller à l'état 147
+
+
+état 141
+
+   59 rotation: ROT LPAR image VIRG point VIRG . ANGLE RPAR
+
+    ANGLE  décalage et aller à l'état 148
+
+
+état 142
+
+   13 else: ELSE . condition
+   14     | ELSE . LACC liste_commandes RACC
+
+    LACC  décalage et aller à l'état 149
+    IF    décalage et aller à l'état 1
+
+    condition  aller à l'état 150
+
+
+état 143
+
+   11 condition: IF LPAR cond RPAR LACC liste_commandes RACC else .
+
+    $défaut  réduction par utilisation de la règle 11 (condition)
+
+
+état 144
+
+   33 param3: VAR EQ . expr
+
+    LPAR  décalage et aller à l'état 45
+    VAR   décalage et aller à l'état 32
+    NUM   décalage et aller à l'état 33
+
+    expr  aller à l'état 151
+
+
+état 145
+
+   26 for: FOR LPAR param1 POINTVIRG param2 POINTVIRG param3 RPAR . LACC liste_commandes RACC
+
+    LACC  décalage et aller à l'état 152
+
+
+état 146
+
+   58 rotation: ROT LPAR chemin VIRG point VIRG ANGLE . RPAR
+
+    RPAR  décalage et aller à l'état 153
+
+
+état 147
+
+   57 rotation: ROT LPAR point VIRG point VIRG ANGLE . RPAR
+
+    RPAR  décalage et aller à l'état 154
+
+
+état 148
+
+   59 rotation: ROT LPAR image VIRG point VIRG ANGLE . RPAR
+
+    RPAR  décalage et aller à l'état 155
+
+
+état 149
+
+   14 else: ELSE LACC . liste_commandes RACC
+
+    IF    décalage et aller à l'état 1
+    FOR   décalage et aller à l'état 2
+    VAR   décalage et aller à l'état 3
+    DRAW  décalage et aller à l'état 4
+    FILL  décalage et aller à l'état 5
+
+    $défaut  réduction par utilisation de la règle 1 (liste_commandes)
+
+    liste_commandes  aller à l'état 156
+    commande         aller à l'état 7
+    condition        aller à l'état 8
+    for              aller à l'état 9
+    declaration      aller à l'état 10
+
+
+état 150
+
+   13 else: ELSE condition .
+
+    $défaut  réduction par utilisation de la règle 13 (else)
+
+
+état 151
+
+   33 param3: VAR EQ expr .
+   43 expr: expr . PLUS expr
+   44     | expr . MOINS expr
+   45     | expr . FOIS expr
+   46     | expr . DIV expr
+   48     | expr . PLUS PLUS
+   49     | expr . MOINS MOINS
+
+    MOINS  décalage et aller à l'état 57
+    PLUS   décalage et aller à l'état 58
+    DIV    décalage et aller à l'état 59
+    FOIS   décalage et aller à l'état 60
+
+    $défaut  réduction par utilisation de la règle 33 (param3)
+
+
+état 152
+
+   26 for: FOR LPAR param1 POINTVIRG param2 POINTVIRG param3 RPAR LACC . liste_commandes RACC
+
+    IF    décalage et aller à l'état 1
+    FOR   décalage et aller à l'état 2
+    VAR   décalage et aller à l'état 3
+    DRAW  décalage et aller à l'état 4
+    FILL  décalage et aller à l'état 5
+
+    $défaut  réduction par utilisation de la règle 1 (liste_commandes)
+
+    liste_commandes  aller à l'état 157
+    commande         aller à l'état 7
+    condition        aller à l'état 8
+    for              aller à l'état 9
+    declaration      aller à l'état 10
+
+
+état 153
+
+   58 rotation: ROT LPAR chemin VIRG point VIRG ANGLE RPAR .
+
+    $défaut  réduction par utilisation de la règle 58 (rotation)
+
+
+état 154
+
+   57 rotation: ROT LPAR point VIRG point VIRG ANGLE RPAR .
+
+    $défaut  réduction par utilisation de la règle 57 (rotation)
+
+
+état 155
+
+   59 rotation: ROT LPAR image VIRG point VIRG ANGLE RPAR .
+
+    $défaut  réduction par utilisation de la règle 59 (rotation)
+
+
+état 156
+
+   14 else: ELSE LACC liste_commandes . RACC
+
+    RACC  décalage et aller à l'état 158
+
+
+état 157
+
+   26 for: FOR LPAR param1 POINTVIRG param2 POINTVIRG param3 RPAR LACC liste_commandes . RACC
+
+    RACC  décalage et aller à l'état 159
+
+
+état 158
+
+   14 else: ELSE LACC liste_commandes RACC .
+
+    $défaut  réduction par utilisation de la règle 14 (else)
+
+
+état 159
+
+   26 for: FOR LPAR param1 POINTVIRG param2 POINTVIRG param3 RPAR LACC liste_commandes RACC .
+
+    $défaut  réduction par utilisation de la règle 26 (for)
