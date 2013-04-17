@@ -16,9 +16,9 @@ cairo_t *cr;
 
 %right PLUS MOINS
 %left FOIS DIV
-
+%left AND OR
 %token LPAR RPAR LACC RACC
-%token INF SUP EQ NOT AND OR
+%token INF SUP EQ NOT
 %token IF ELSE FOR
 %token VIRG POINTVIRG DPTS
 %token LINETO
@@ -26,23 +26,25 @@ cairo_t *cr;
 %token DRAW FILL
 %token TRANS ROT
 %token CYCLE
-%token ANGLE
 
 %token <scalaire> NUM
 
-%type <scalaire> expr
+%type <scalaire> expr expr_evdt
 %type <point> point
 %%
 
 liste_commandes:
 /*empty*/ {}
-|commande liste_commandes {}
-|declaration liste_commandes {}
-|condition liste_commandes {}
-|for liste_commandes {}
+|liste_commandes commande POINTVIRG {}
 ;
 
 commande:
+| dessin {}
+| declaration {}
+| condition {}
+| loop {}
+
+dessin:
 DRAW chemin {}
 | DRAW image {}
 | DRAW rotation {}
@@ -51,10 +53,10 @@ DRAW chemin {}
 ;
 
 condition:
-IF LPAR cond RPAR LACC liste_commandes RACC else {}
+IF LPAR cond RPAR LACC liste_commandes RACC sinon {}
 ;
 
-else:
+sinon:
 /*empty*/ {}
 | ELSE condition {}
 | ELSE LACC liste_commandes RACC {}
@@ -74,7 +76,7 @@ cond OR cond {}
 |expr SUP EQ expr {}
 ;
 
-for:
+loop:
 FOR LPAR param1 POINTVIRG param2 POINTVIRG param3 RPAR LACC liste_commandes RACC {}
 ;
 
@@ -95,9 +97,14 @@ param3:
 ;
 
 
-chemin:
+chemin_evdt:
 chemin LINETO noeud {}
+//| VAR LINETO noeud {}
 | point {}
+;
+
+chemin:
+chemin_evdt {}
 | VAR {}
 ;
 
@@ -114,6 +121,11 @@ LPAR expr VIRG expr RPAR {}
 ;
 
 expr:
+expr_evdt {}
+| VAR {}
+;
+
+expr_evdt:
 expr PLUS expr { $$ = $1 + $3; }
 |expr MOINS expr { $$ = $1 - $3; }
 |expr FOIS expr { $$ = $1 * $3; }
@@ -122,26 +134,24 @@ expr PLUS expr { $$ = $1 + $3; }
 |expr PLUS PLUS { $$ = $1 + 1; }
 |expr MOINS MOINS { $$ = $1 - 1; }
 |NUM { $$=$1; }
-|VAR {}
 ;
 
 declaration:
-VAR EQ chemin {}
-| VAR EQ expr {}
+ VAR EQ VAR {}
+| VAR EQ chemin_evdt {}
+| VAR EQ expr_evdt {}
 | VAR EQ image {}
 | VAR EQ translation {}
 | VAR EQ rotation {}
 ;
 
 rotation:
-ROT LPAR point VIRG point VIRG ANGLE RPAR {}
-|ROT LPAR chemin VIRG point VIRG ANGLE RPAR {}
-|ROT LPAR image VIRG point VIRG ANGLE RPAR {}
+ROT LPAR chemin VIRG point VIRG NUM RPAR {}
+|ROT LPAR image VIRG point VIRG NUM RPAR {}
 ;
 
 translation:
-TRANS LPAR point VIRG point RPAR {}
-|TRANS LPAR chemin VIRG point RPAR {}
+TRANS LPAR chemin VIRG point RPAR {}
 |TRANS LPAR image VIRG point RPAR {}
 ;
 

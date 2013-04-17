@@ -1,0 +1,22 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct point_t{
+    float x;
+    float y;
+}*point;
+
+typedef struct node_t *node;
+struct node_t{
+    char *nom_var;
+    node next;
+    union{
+	float val;
+	liste chemin;
+    }u;
+	
+}
+
+typedef struct liste_t * liste;
+struct liste_t{
+}

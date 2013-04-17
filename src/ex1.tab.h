@@ -41,16 +41,16 @@
      PLUS = 259,
      DIV = 260,
      FOIS = 261,
-     LPAR = 262,
-     RPAR = 263,
-     LACC = 264,
-     RACC = 265,
-     INF = 266,
-     SUP = 267,
-     EQ = 268,
-     NOT = 269,
-     AND = 270,
-     OR = 271,
+     OR = 262,
+     AND = 263,
+     LPAR = 264,
+     RPAR = 265,
+     LACC = 266,
+     RACC = 267,
+     INF = 268,
+     SUP = 269,
+     EQ = 270,
+     NOT = 271,
      IF = 272,
      ELSE = 273,
      FOR = 274,
@@ -65,8 +65,7 @@
      TRANS = 283,
      ROT = 284,
      CYCLE = 285,
-     ANGLE = 286,
-     NUM = 287
+     NUM = 286
    };
 #endif
 
@@ -85,7 +84,7 @@ typedef union YYSTYPE
 
 
 /* Line 2068 of yacc.c  */
-#line 89 "ex1.tab.h"
+#line 88 "ex1.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
