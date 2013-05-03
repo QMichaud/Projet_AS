@@ -1,47 +1,56 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+struct var {
+    char *nom;
+    union {
+	float val;
+	liste *chemin;
+    }u;
+}
+
 struct point_t{
     float x;
     float y;
 }*point;
 
-typedef struct node_point_t node_point;
-
-struct node_point_t{
-    node_point next;
-    point point;
-};
-typedef struct commande_t commande;
-
-struct commande_t{
-    
-    node_point chemin;
-typedef struct node_t *node;
-
 struct node_t{
-    char *nom_var;
-    node next;
-    union{
-	float valeur;
-	node_point chemin;
-	liste_commande image;
-    }contenu;
-};
-
-typedef struct liste_t * liste;
+    void *obj;
+    node *next;
+}node*;
 
 struct liste_t{
-    node head;
-    node current;
-};
+    node *head;
+    node *current;
+}liste*;
 
 
-float find_val(char *nom, liste l);
-liste find_chemin(char *nom, liste l);
-liste *find_image(char *nom, liste l);
-liste creer_liste();
-void insert_val(char *nom, float val);
-void insert_chemin(char *nom, liste chemin);
-void insert_image(char *nom, liste *image);
-void destroy_liste(liste l);
+
+
+extern liste *create_liste(void);
+extern void add_obj(void *object, liste *l);
+extern void find_var(liste *l, String nom);
+extern int type_var(void *object); // return 0 val, 1 chemin
+extern point *pop_liste_chemin(liste *l); //
+extern int is_empty(liste *l); // 0 true, 1 false
+
+struct stack;
+
+typedef struct stack *stack;
+
+/* create an empty stack */
+extern stack stack_create(void);
+
+/* push an object on a stack */
+extern void stack_push(stack s, void *object);
+
+/* return true if and only if the stack is empty */
+extern int stack_empty(stack s);
+
+/* return the top element of the stack.
+   The stack must not be empty (as reported by stack_empty()) */
+extern void * stack_top(stack s);
+
+/* pop an element off of the stack.
+   The stack must not be empty (as reported by stack_empty()) */
+extern void stack_pop(stack s);
