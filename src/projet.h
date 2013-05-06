@@ -7,24 +7,12 @@ struct var {
 	float val;
 	liste *chemin;
     }u;
-}
+};
 
 struct point_t{
     float x;
     float y;
 }*point;
-
-struct node_t{
-    void *obj;
-    node *next;
-}node*;
-
-struct liste_t{
-    node *head;
-    node *current;
-}liste*;
-
-
 
 
 extern liste *create_liste(void);
