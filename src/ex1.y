@@ -2,15 +2,21 @@
 #include <stdio.h>
 #include <cairo/cairo.h>
 #include <cairo/cairo-pdf.h>
+#include "projet.h"
 
 int yylex(void);
+int yyparse(void);
 
 cairo_surface_t *surface;
 cairo_t *cr;
+
+
+
 %}
 
 %union{
     float scalaire;
+    char* variable;
     struct coord *point;
 }
 
@@ -43,6 +49,7 @@ commande:
 | declaration {}
 | condition {}
 | loop {}
+;
 
 dessin:
 DRAW chemin {}
@@ -137,7 +144,7 @@ expr PLUS expr { $$ = $1 + $3; }
 ;
 
 declaration:
- VAR EQ VAR {}
+VAR EQ VAR {printf("coucou");}
 | VAR EQ chemin_evdt {}
 | VAR EQ expr_evdt {}
 | VAR EQ image {}
@@ -167,7 +174,7 @@ yyerror(char *message)
 
 int main(int argc, char *argv[])
 {
-	yyparse();
+   yyparse();
 
 	return(0);
 }

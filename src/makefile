@@ -12,4 +12,10 @@ run: $(EXEC)
 %.tab.o: %.tab.c
 	gcc -c -o $@ $<
 %.out: %.yy.o %.tab.o
-	gcc -o $@ $(CFLAGS) -ly -lfl
+	clear
+	gcc lex.yy.c ex1.tab.c -o $@ $(CFLAGS) -ly -lfl -std=c99
+	./ex1.out < stringtest
+clean:
+	rm -rf *.o
+mrproper: clean
+	rm -rf ex1.out
