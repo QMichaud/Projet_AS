@@ -45,10 +45,3 @@ cycle return CYCLE;
 
 {FLOAT} { yylval.scalaire = atof(yytext); return NUM; }
 
-
-
-
-a = 5
-a = 3
-
-(3,3)--(3,2)--cycle
