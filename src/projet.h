@@ -32,8 +32,8 @@ struct point_t{
 };
 
 
-extern liste *create_liste(void);
-extern void add_obj(void *object, liste *l);
+extern liste create_liste(void);
+extern void add_obj(void *object, liste l);
 extern void find_var(liste *l, char *nom);
 extern int type_var(void *object); // return 0 val, 1 chemin
 extern point *pop_liste_chemin(liste *l); //
