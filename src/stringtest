@@ -1,11 +1,2 @@
-re
-var=(5,30);
-draw (10,10)--var--(50,30)--cycle--(50,0)--(50,20)--cycle
-reazr
-
-
-
-liste = même forme que liste finale.
-Liste_var = [[liste1], [liste2], ..., [listei]]
-Liste_finale = [(c1, c2), (c3, c4), ... , cycle, (ci, cj)]
+abc=3;
 

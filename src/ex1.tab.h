@@ -58,13 +58,13 @@
      POINTVIRG = 276,
      DPTS = 277,
      LINETO = 278,
-     VAR = 279,
-     IMG = 280,
-     DRAW = 281,
-     FILL = 282,
-     TRANS = 283,
-     ROT = 284,
-     CYCLE = 285,
+     IMG = 279,
+     DRAW = 280,
+     FILL = 281,
+     TRANS = 282,
+     ROT = 283,
+     CYCLE = 284,
+     VAR = 285,
      NUM = 286
    };
 #endif
@@ -76,15 +76,16 @@ typedef union YYSTYPE
 {
 
 /* Line 2068 of yacc.c  */
-#line 12 "ex1.y"
+#line 15 "ex1.y"
 
     float scalaire;
+    char* variable;
     struct coord *point;
 
 
 
 /* Line 2068 of yacc.c  */
-#line 88 "ex1.tab.h"
+#line 89 "ex1.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

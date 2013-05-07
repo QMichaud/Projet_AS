@@ -10,8 +10,6 @@ int yyparse(void);
 cairo_surface_t *surface;
 cairo_t *cr;
 
-
-
 %}
 
 %union{
@@ -28,108 +26,110 @@ cairo_t *cr;
 %token IF ELSE FOR
 %token VIRG POINTVIRG DPTS
 %token LINETO
-%token VAR IMG
+%token IMG
 %token DRAW FILL
 %token TRANS ROT
 %token CYCLE
 
+%token <variable> VAR
 %token <scalaire> NUM
 
 %type <scalaire> expr expr_evdt
 %type <point> point
+
 %%
 
 liste_commandes:
-/*empty*/ {}
-|liste_commandes commande POINTVIRG {}
+liste_commandes commande POINTVIRG {printf("commande\n");}
+|/*empty*/ {printf("empty\n");}
 ;
 
 commande:
-| dessin {}
-| declaration {}
-| condition {}
-| loop {}
+| dessin {printf("dessin\n");}
+| declaration {printf("declaration\n");}
+| condition {printf("condition\n");}
+| loop {printf("loop\n");}
 ;
 
 dessin:
-DRAW chemin {}
-| DRAW image {}
-| DRAW rotation {}
-| DRAW translation {}
-| FILL chemin {}
+DRAW chemin {printf("draw chemin\n");}
+| DRAW image {printf("draw image\n");}
+| DRAW rotation {printf("draw rotation\n");}
+| DRAW translation {printf("draw translation\n");}
+| FILL chemin {printf("fill chemin\n");}
 ;
 
 condition:
-IF LPAR cond RPAR LACC liste_commandes RACC sinon {}
+IF LPAR cond RPAR LACC liste_commandes RACC sinon {printf("if lpar cond ...\n");}
 ;
 
 sinon:
-/*empty*/ {}
-| ELSE condition {}
-| ELSE LACC liste_commandes RACC {}
+/*empty*/ {printf("empty\n");}
+| ELSE condition {printf("else condition\n");}
+| ELSE LACC liste_commandes RACC {printf("else lacc liste_commande ...\n");}
 ;
 
 cond:
-cond OR cond {}
-|LPAR cond OR cond RPAR {}
-|cond AND cond {}
-|LPAR cond AND cond RPAR {}
-|NOT LPAR cond RPAR {}
-|expr NOT EQ expr {}
-|expr EQ EQ expr {}
-|expr INF expr {}
-|expr INF EQ expr {}
-|expr SUP expr {}
-|expr SUP EQ expr {}
+cond OR cond {printf("cond or cond\n");}
+|LPAR cond OR cond RPAR {printf("lpar cond or cond ...\n");}
+|cond AND cond {printf("cond and cond\n");}
+|LPAR cond AND cond RPAR {printf("lpar cond and cond rpar\n");}
+|NOT LPAR cond RPAR {printf("not lpar cond lpar\n");}
+|expr NOT EQ expr {printf("expr not eq expr\n");}
+|expr EQ EQ expr {printf("expr eq eq expr\n");}
+|expr INF expr {printf("expr inf expr\n");}
+|expr INF EQ expr {printf("expr inf eq expr\n");}
+|expr SUP expr {printf("expr sup expr\n");}
+|expr SUP EQ expr {printf("expr sur eq expr\n");}
 ;
 
 loop:
-FOR LPAR param1 POINTVIRG param2 POINTVIRG param3 RPAR LACC liste_commandes RACC {}
+FOR LPAR param1 POINTVIRG param2 POINTVIRG param3 RPAR LACC liste_commandes RACC {printf("for lpar param1 ...\n");}
 ;
 
 param1:
-/* empty */ {}
-|declaration {}
+/* empty */ {printf("empty\n");}
+|declaration {printf("declaration\n");}
 ;
 
 param2:
-/* empty */ {}
-|cond {}
+/* empty */ {printf("empty\n");}
+|cond {printf("cond\n");}
 ;
 
 param3:
-/* empty */ {}
-|expr {}
-|VAR EQ expr {}
+/* empty */ {printf("empty\n");}
+|expr {printf("expr\n");}
+|VAR EQ expr {printf("var eq expr\n");}
 ;
 
 
 chemin_evdt:
-chemin LINETO noeud {}
+chemin LINETO noeud {printf("chemin lineto noeud\n");}
 //| VAR LINETO noeud {}
-| point {}
+| point {printf("point\n");}
 ;
 
 chemin:
-chemin_evdt {}
-| VAR {}
+chemin_evdt {printf("chemin_evdt\n");}
+| VAR {printf("var\n");}
 ;
 
 noeud:
-point {}
-| CYCLE {}
-| PLUS point {}
-| VAR {}
+point {printf("point\n");}
+| CYCLE {printf("cycle\n");}
+| PLUS point {printf("plus point\n");}
+| VAR {printf("var\n");}
 ;
 
 point:
-LPAR expr VIRG expr RPAR {}
-|LPAR expr DPTS expr RPAR {}
+LPAR expr VIRG expr RPAR {printf("lpar expr virg expr rpar\n");}
+|LPAR expr DPTS expr RPAR {printf("lpar expr dpts expr rpar\n");}
 ;
 
 expr:
-expr_evdt {}
-| VAR {}
+expr_evdt { printf("expr_evdt\n"); $$ = $1; }
+| VAR {printf("var\n");}
 ;
 
 expr_evdt:
@@ -140,42 +140,42 @@ expr PLUS expr { $$ = $1 + $3; }
 |LPAR expr RPAR { $$ = $2;}
 |expr PLUS PLUS { $$ = $1 + 1; }
 |expr MOINS MOINS { $$ = $1 - 1; }
-|NUM { $$=$1; }
+|NUM { $$ = yylval.scalaire; printf("num %f\n", $$); }
 ;
 
 declaration:
-VAR EQ VAR {printf("coucou");}
-| VAR EQ chemin_evdt {}
-| VAR EQ expr_evdt {}
-| VAR EQ image {}
-| VAR EQ translation {}
-| VAR EQ rotation {}
+VAR EQ VAR {printf("var eq var\n");}
+|VAR EQ chemin_evdt { printf("var eq chemin_evdt\n");}
+|VAR EQ expr_evdt {printf("var eq expr_evdt\n");}
+|VAR EQ image {printf("var eq image\n");}
+|VAR EQ translation {printf("var eq translation\n");}
+|VAR EQ rotation {printf("var eq rotation\n");}
 ;
 
 rotation:
-ROT LPAR chemin VIRG point VIRG NUM RPAR {}
-|ROT LPAR image VIRG point VIRG NUM RPAR {}
+ROT LPAR chemin VIRG point VIRG NUM RPAR {printf("rot lpar chemin virg point virg ...\n");}
+|ROT LPAR image VIRG point VIRG NUM RPAR {printf("rot lpar image virg point virg ...\n");}
 ;
 
 translation:
-TRANS LPAR chemin VIRG point RPAR {}
-|TRANS LPAR image VIRG point RPAR {}
+TRANS LPAR chemin VIRG point RPAR {printf("trans lpar chemin virg ...\n");}
+|TRANS LPAR image VIRG point RPAR {printf("trans lpar image virg ...\n");}
 ;
 
 image:
-IMG LACC liste_commandes RACC {}
+IMG LACC liste_commandes RACC {printf("img lacc liste_commandes racc\n");}
 ;
 
 %%
+
 yyerror(char *message)
 {
-    printf("%s\n Erreur : ", message);
+    printf("Erreur : %s\n ", message);
 }
 
 int main(int argc, char *argv[])
 {
    yyparse();
-
-	return(0);
+   return(0);
 }
 

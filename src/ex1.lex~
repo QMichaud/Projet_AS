@@ -1,8 +1,6 @@
 %{
 #include "ex1.tab.h"
 
-char *tab_var[];
-char var[256];
 %}
 
 FLOAT ([0-9]+(\.[0-9]*)?|\.[0-9]+)
@@ -11,14 +9,12 @@ FLOAT ([0-9]+(\.[0-9]*)?|\.[0-9]+)
  
 %%
 
-[a-zA-Z0-9_]*\= {int i = 0; while(yytext[i] != '=') { var[i] = yytext[i]; i++;} yylval = var; return VAR; }
-
 \+ return PLUS;
 \- return MOINS;
 \* return FOIS;
 \/ return DIV;
 && return AND;
-|| return OR;
+\|\| return OR;
 
 \( return LPAR;
 \) return RPAR;
@@ -26,7 +22,7 @@ FLOAT ([0-9]+(\.[0-9]*)?|\.[0-9]+)
 \} return RACC;
 \< return INF;
 \> return SUP;
-\= return EQ;
+\= { printf("eq\n"); return EQ; }
 \! return NOT;
 "if" return IF;
 "else" return ELSE;
@@ -45,10 +41,6 @@ cycle return CYCLE;
 
 {FLOAT} { yylval.scalaire = atof(yytext); return NUM; }
 
+[a-zA-Z_]+ { printf("ok\n"); return VAR; }
 
-
-
-a = 5
-a = 3
-
-(3,3)--(3,2)--cycle
+<<EOF>> {return EXIT_SUCCESS;}

@@ -11,6 +11,16 @@ liste create_liste(void)
 }
 
 void add_obj(void *object, liste l){
+    l->current->next = malloc(sizeof(node));
+    l->current->next->obj = object;
+    l->current->next->next = NULL;
+    l->current = l->current->next;
+}
+
+void find_var(liste l, char *nom)
+{
+    
+    char *n = (struct var)(l->head->obj).nom;
 }
     
     
